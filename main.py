@@ -7,12 +7,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-YOUTUBE_API_KEY = 
+try:
+    YOUTUBE_API_KEY = os.environ.get('API_KEY')
+except KeyError:
+    print("Did you forget to set API_KEY in .env ? Create a file .env and get the key from GCP")
+
+
 parser =  argparse.ArgumentParser()
 
 
 
 def fetch_youtube(url, *args):
+    print(url)
     pass
 
 def main():
@@ -23,10 +29,7 @@ def main():
         exit()
 
     if parser.parse_args().youtube is not None:
-        fetch_youtube(parser)
-
-
-
+        fetch_youtube(parser.parse_args().youtube)
 
 
 
