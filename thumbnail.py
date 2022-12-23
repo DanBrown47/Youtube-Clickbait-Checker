@@ -2,10 +2,13 @@ import json
 import requests
 import os
 import sys
+import urllib.parse
+import urllib.request
 import argparse
 import re
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+from pytube import YouTube
 
 load_dotenv()
 
@@ -16,10 +19,19 @@ except KeyError:
 
 
 parser =  argparse.ArgumentParser()
+THUMB_LOC = './assets/thumbnails/thumbnail.jpg'
+VID_LOC = './assets/video/'
+
+def save_to_loc(url):
+    with urllib.request.urlopen(url) as url_data:
+        image_data = url_data.read()
+    
+    with open(THUMB_LOC, 'wb') as image_file:
+        image_file.write(image_data)
+
 
 
 def is_youtube_url(url):
-    return True
     # Compile the regular expression
     pattern = re.compile(r'^(https?://)?(www\.)?(youtube\.com|youtu\.be)')
 
@@ -28,24 +40,54 @@ def is_youtube_url(url):
 
 
 def get_thumbnail(url, **kwargs):
+    parsed_url = urllib.parse.urlparse(url)
+    query_string = parsed_url.query
+    query_dict = urllib.parse.parse_qs(query_string)
+    video_id = query_dict['v'][0]
+
+    pass
     api_obj = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
     request = api_obj.videos().list(
             part="snippet",
-            id=url
+            id=video_id
     )
-
+    # Thumbnail is kept as a placeholder with High resolution
     response = request.execute()
     thumbnail_url = response["items"][0]["snippet"]["thumbnails"]["high"]["url"]
-    print(thumbnail_url)
     return thumbnail_url
 
-    # return res_url
+def download_video(url):
+    # Try to create object
+    try:
+        yt = YouTube(url)
+    except:
+        print("Connection Error")
 
+    # filters out all the files with "mp4" extension 
+    mp4files = yt.filter('mp4')
+
+    #to set the name of the file
+    yt.set_filename('Video.mp4')
+    # get the video with the extension and
+    # resolution passed in the get() function 
+    d_video = yt.get(mp4files[-1].extension,mp4files[-1].resolution)
+    
+    try:
+        # downloading the video 
+        d_video.download(VID_LOC)
+    except:
+        print("Some Error!")
+        git
+    print('Task Completed!')
 
 def fetch_youtube(url, **kwargs):
     # Testing if the url given is a youtube link
     if is_youtube_url(url):
         thumbnail_url = get_thumbnail(url)
+        print(thumbnail_url)
+        save_to_loc(thumbnail_url)
+        download_video(url)
+        
     else:
         print("Not a youtube url")
 
