@@ -1,5 +1,3 @@
-import json
-import requests
 import os
 import sys
 import urllib.parse
@@ -19,14 +17,15 @@ except KeyError:
 
 
 parser =  argparse.ArgumentParser()
-THUMB_LOC = './assets/thumbnails/thumbnail.jpg'
+THUMB_FILE = './assets/thumbnails/thumbnail.jpg'
+THUMB_LOC = './assets/thumbnails/'
 VID_LOC = './assets/video/'
 
 def save_to_loc(url):
     with urllib.request.urlopen(url) as url_data:
         image_data = url_data.read()
     
-    with open(THUMB_LOC, 'wb') as image_file:
+    with open(THUMB_FILE, 'wb') as image_file:
         image_file.write(image_data)
 
 
@@ -60,31 +59,36 @@ def download_video(url):
     # Try to create object
     try:
         yt = YouTube(url)
+        yt = yt.streams.get_highest_resolution()
     except:
         print("Connection Error")
 
-    # filters out all the files with "mp4" extension 
-    mp4files = yt.filter('mp4')
-
-    #to set the name of the file
-    yt.set_filename('Video.mp4')
-    # get the video with the extension and
-    # resolution passed in the get() function 
-    d_video = yt.get(mp4files[-1].extension,mp4files[-1].resolution)
-    
     try:
         # downloading the video 
-        d_video.download(VID_LOC)
+        yt.download(VID_LOC)
     except:
         print("Some Error!")
-        git
+        
     print('Task Completed!')
+
+
+def clean_assets(path):
+    for filename in os.listdir(path):
+        file_path = os.path.join(path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 
 def fetch_youtube(url, **kwargs):
     # Testing if the url given is a youtube link
     if is_youtube_url(url):
         thumbnail_url = get_thumbnail(url)
         print(thumbnail_url)
+        clean_assets(VID_LOC)
+        clean_assets(THUMB_LOC)
         save_to_loc(thumbnail_url)
         download_video(url)
         
