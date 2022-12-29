@@ -1,61 +1,61 @@
 import os
 import cv2
 import numpy as np
-from skimage.metrics import structural_similarity as ssim
+import glob
+from PIL import Image 
+from sentence_transformers import SentenceTransformer, util
 
-
+# Load the OpenAI CLIP Model
+print('Loading CLIP Model...')
+model = SentenceTransformer('clip-ViT-B-32')
+print('Loading CLIP Model Done')
 
 VID_LOC = "./assets/video"
 THUMB_LOC = "./assets/thumbnails/"
 
-
-def get_ssim_score(image, frame):
-
-    height1, width1, _ = frame.shape
-    height2, width2, _ = image.shape
-
-    # Find the maximum dimensions
-    max_height = max(height1, height2)
-    max_width = max(width1, width2)
-
-    # Create empty images with the maximum dimensions
-    image1_resized = np.zeros((max_height, max_width, 3), np.uint8)
-    image2_resized = np.zeros((max_height, max_width, 3), np.uint8)
-
-    # Resize the images to the maximum dimensions
-    image1_resized = cv2.resize(frame, (max_width, max_height), interpolation=cv2.INTER_CUBIC)
-    image2_resized = cv2.resize(image, (max_width, max_height), interpolation=cv2.INTER_CUBIC)
-
-    # Convert the images to grayscale
-    image1_gray = cv2.cvtColor(image1_resized, cv2.COLOR_BGR2GRAY)
-    image2_gray = cv2.cvtColor(image2_resized, cv2.COLOR_BGR2GRAY)
-
-    # Compute the SSIM value
-    score = ssim(image1_gray, image2_gray)
-
-    return score
-
-
-
-
-image = cv2.imread(os.path.join(THUMB_LOC,os.listdir(THUMB_LOC)[0]))
-
+thumbnail = cv2.imread(os.path.join(THUMB_LOC,os.listdir(THUMB_LOC)[0]))
 video  = cv2.VideoCapture(os.path.join(VID_LOC,os.listdir(VID_LOC)[0]))
-# Check if the video file is opened successfully
-if not video.isOpened():
-    print('Error opening video file')
 
-
-ret, frame = video.read()
+# Iterate through the frames of the video
 i = 0
-while ret:
-    # Process the frame here
-    # ...
+while True:
+    # Read a frame from the video
+    _, frame = video.read()
+
+    # If we have reached the end of the video, break the loop
+    if frame is None:
+        break
     
-    # Read the next frame
-    
-    i=i+1
-    timestamp = video.get(cv2.CAP_PROP_POS_MSEC)
-    score = get_ssim_score(frame, image)
-    print("{} frame with SSIM Score as {:.5f} at {} timestamp".format(i, score,  timestamp))
-    ret, frame = video.read()
+    if i%12 == 0 and 1 < 20:
+        cv2.imwrite('./frames/frame.jpg', frame)
+        break
+    i=i+1   
+
+# Release the video capture object
+video.release()
+
+image_names = list(glob.glob('./frames/*.jpg'))
+print("Images:", len(image_names))
+encoded_image = model.encode([Image.open(filepath) for filepath in image_names], batch_size=128, convert_to_tensor=True, show_progress_bar=True)
+# Train
+
+processed_images = util.paraphrase_mining_embeddings(encoded_image)
+NUM_SIMILAR_IMAGES = 10
+
+
+# =================
+# NEAR DUPLICATES
+# =================
+print('Finding near duplicate images...')
+# Use a threshold parameter to identify two images as similar. By setting the threshold lower, 
+# you will get larger clusters which have less similar images in it. Threshold 0 - 1.00
+# A threshold of 1.00 means the two images are exactly the same. Since we are finding near 
+# duplicate images, we can set it at 0.99 or any number 0 < X < 1.00.
+# threshold = 0.50
+print(processed_images)
+near_duplicates = [image for image in processed_images ]
+
+for score, image_id1, image_id2 in near_duplicates[0:NUM_SIMILAR_IMAGES]:
+    print("\nScore: {:.3f}%".format(score * 100))
+    print(image_names[image_id1])
+    print(image_names[image_id2])
