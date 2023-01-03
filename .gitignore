@@ -1,6 +1,6 @@
-assets/
-video/
-frames/
+assets/**
+video/**
+frames/**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
