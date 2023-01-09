@@ -10,10 +10,13 @@ def index():
 def input():
   return render_template('input.html')
 
-@app.route('/output', methods=['POST'])
+@app.route('/fetch', methods=['POST'])
 def output():
-  text = request.form['text']
-  return render_template('output.html', text=text)
+    YouTube_Link =  request.form['youtube']
+    print(YouTube_Link)
+    return render_template('input.html')
+
+
 
 if __name__ == '__main__':
   app.run()
