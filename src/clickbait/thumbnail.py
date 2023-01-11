@@ -34,16 +34,6 @@ class Fetch():
 
 
 
-    def is_youtube_url(url):
-        # Compile the regular expression
-        pattern = re.compile(r'^(https?://)?(www\.)?(youtube\.com|youtu\.be)')
-
-        # Check if the string matches the pattern
-        if pattern.match(url) is not None:
-            return 1
-        else:
-            return 0
-
 
 
     def get_thumbnail(self, **kwargs):
