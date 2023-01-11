@@ -28,20 +28,16 @@ def input():
 
 @app.route('/fetch', methods=['POST'])
 def output():
-  YouTube_Link =  request.form['youtube']
+  YouTube_Link =  request.form['youtube'].strip()
+  # A mistake will render the link unusable
+
   pattern = re.compile(r'^(https?://)?(www\.)?(youtube\.com|youtu\.be)')
   if pattern.match(YouTube_Link) is not None:
     val = Fetch(YouTube_Link, YOUTUBE_API_KEY)
 
+    
 
-
-  
-
-
-
-
-
-    print("Is Youtube Link \n")
+    
     return render_template('input.html'), 200
   else:
     message = """
