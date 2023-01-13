@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Strictly related to the web mechanism is written out her all else are called from
 # src/ using the OS library [Hope it works for you]
 from src.clickbait.thumbnail import Fetch
+from src.clickbait.clickbait_dect import Click
 
 
 load_dotenv()
@@ -33,12 +34,9 @@ def output():
 
   pattern = re.compile(r'^(https?://)?(www\.)?(youtube\.com|youtu\.be)')
   if pattern.match(YouTube_Link) is not None:
-    val = Fetch(YouTube_Link, YOUTUBE_API_KEY)
+    Fetch(YouTube_Link, YOUTUBE_API_KEY)
 
-    
-
-    
-    return render_template('input.html'), 200
+    return render_template('download_complete.html', message="Download Complete"), 200
   else:
     message = """
       The link does not seems to be a Youtube link
@@ -47,6 +45,16 @@ def output():
     """
     return render_template('error_5XX.html' , error=message), 500
     
+
+
+
+@app.route('/clickbait')
+def process_clickbait():
+  clicks_out = Click()
+  print(clicks_out.Frames_similarity_index)
+  return render_template('clickbait.html', my_list=clicks_out.Frames_similarity_index)
+
+
 # Need to reverify if it is a youtube link or not
 # To test the same, I'm embedding the youtube link into the web
 
