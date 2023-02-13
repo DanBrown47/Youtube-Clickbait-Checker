@@ -20,12 +20,12 @@ class Click():
     def __init__(self):
         # Loading the model | Pretrained model
         print("loading model")
-        model = torchvision.models.resnet50(weights='ResNet50_Weights.DEFAULT')
+        self.model = torchvision.models.resnet50(weights='ResNet50_Weights.DEFAULT')
 
         # Set to the model evaluation mode
-        model.eval()
+        self.model.eval()
 
-        transform = transforms.Compose([
+        self.transform = transforms.Compose([
                 transforms.Resize(256),
                     transforms.CenterCrop(224),
                         transforms.ToTensor(),
@@ -33,17 +33,17 @@ class Click():
                             ])
         
         # Calling the driver function
-        self.Frames_similarity_index = process()
+        self.Frames_similarity_index = Click.process(self)
         
 
 
         
 
 
-    def sim_resnet(image1, image2) -> float:
+    def sim_resnet(self, image1, image2) -> float:
         # Pass the images through the ResNet model to get the output feature vectors
-        feature_vector1 = model(image1).squeeze()
-        feature_vector2 = model(image2).squeeze()
+        feature_vector1 = self.model(image1).squeeze()
+        feature_vector2 = self.model(image2).squeeze()
 
         # Calculate the cosine similarity between the feature vectors
         similarity = torch.nn.functional.cosine_similarity(feature_vector1, feature_vector2, dim=0)
@@ -52,7 +52,7 @@ class Click():
         return similarity_score
 
 
-    def process():
+    def process(self):
 
         # Iterate through the frames of the video
 
@@ -60,7 +60,7 @@ class Click():
         i = 0
 
         image1 = Image.open(thumbnail)
-        image1 = transform(image1).unsqueeze(0)
+        image1 = self.transform(image1).unsqueeze(0)
 
         while (video.isOpened()):
             # Read a frame from the video
@@ -73,14 +73,14 @@ class Click():
             
             if i%12 == 0:
                 
-                filename = './frames/frame'+str(i)+'.jpg'
+                filename = './assets/frames/frame'+str(i)+'.jpg'
                 
                 cv2.imwrite(filename, frame) # Is I/O making it slow ?
 
                 image2 = Image.open(filename)
-                image2 = transform(image2).unsqueeze(0)
+                image2 = self.transform(image2).unsqueeze(0)
 
-                score = sim_resnet(image1, image2)
+                score = Click.sim_resnet(self, image1, image2)
                 
                 print("For Frame {} The score {}".format(i,score))
                 Frames_similarity_index[i] = score 
