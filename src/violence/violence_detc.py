@@ -14,14 +14,15 @@ IMG_SIZE = 128
 RESULT =[]
 
 def print_results(video, limit=None)->str:
-        fig=plt.figure(figsize=(16, 30))
+        # fig=plt.figure(figsize=(16, 30))
         # if not os.path.exists('output'):
         #     os.mkdir('output')
 
         print("Loading model ...")
         try:
-          model = load_model('model/model.h5')
-        except:
+          model = load_model('./model/model.h5')
+        except Exception as e:
+          print(e)
           print("Unable to load the model")
           sys.exit()
 
@@ -57,8 +58,8 @@ def print_results(video, limit=None)->str:
                         label = i
 
                         text = "Violence: {}".format(label)
-                        print('prediction:', text)
-                        print("print here")
+                        # print('prediction:', text)
+                        # print("print here")
                         # file = open("output/output.txt",'w')
                         # file.write(text)
                         # file.close()
@@ -81,7 +82,7 @@ def print_results(video, limit=None)->str:
                                         (W, H), True)
                                 print("saving video")
 
-                        print("print here 2")
+                        # print("print here 2")
                         # writer.write(output)
                         #cv2.imshow("Output", output)
 
@@ -113,6 +114,6 @@ def predict_video(video_url):
       stream = yt.streams.get_highest_resolution()
       video_file = stream.download(output_path="assets/video")
       predict = print_results(video_file,limit=30)
-      print(predict)
+      return predict
     except:
       print("Unexpected error occured")
