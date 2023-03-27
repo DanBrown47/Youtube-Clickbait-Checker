@@ -27,6 +27,13 @@ def index():
 def input():
   return render_template('input.html')
 
+
+@app.route('/mature')
+def mature():
+  return render_template('input.html')
+
+
+
 @app.route('/fetch', methods=['POST'])
 def output():
   YouTube_Link =  request.form['youtube'].strip()
