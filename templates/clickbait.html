@@ -2,8 +2,7 @@
 <html>
   <head>
     <title>Clickbait Chart</title>
-    <link rel="stylesheet" href="apple.css" type="text/css" />
-    <link rel="shortcut icon" href="apple-icon.ico" type="image/x-icon" />
+    
     <style>
       table {
         width: 100%;
@@ -58,37 +57,19 @@
   </head>
   <body>
     <div class="hero-section">
-      <img src="product-image.jpg" alt="Product image" />
       <div class="hero-section-text">
-        <h1>Click bait Dectections</h1>
-        <h2>Introducing the latest innovation from Apple</h2>
-        <a href="#features" class="btn">Learn More</a>
+        <h1>Click bait Similarity Graph</h1>
+        <a href="https://www.merriam-webster.com/dictionary/similarity" class="btn">Learn More</a>
       </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Key</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for key, value in my_list.items() %}
-        <tr>
-          <td>{{ key }}</td>
-          <td>{{ value }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div id="graph"></div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        var graphJSON = JSON.parse('{{ graphJSON|safe }}');
+        console.log(graphJSON);
+        Plotly.newPlot('graph', graphJSON);
+    </script>
 
-    <div class="cta-section">
-      <h2>Pre-order now</h2>
-      <a href="#" class="btn">Order Now</a>
-    </div>
-
-    <footer>
-      <p>Copyright © 2021 Apple Inc.</p>
-    </footer>
+    
   </body>
 </html>

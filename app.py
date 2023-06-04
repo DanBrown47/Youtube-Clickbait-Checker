@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import os, re
 from dotenv import load_dotenv
+import plotly.graph_objs as go
+import plotly.io as pio
 
 # Strictly related to the web mechanism is written out her all else are called from
 # src/ using the OS library [Hope it works for you]
@@ -51,8 +53,21 @@ def output():
 @app.route('/clickbait')
 def process_clickbait():
   clicks_out = Click()
-  print(clicks_out.Frames_similarity_index)
-  return render_template('clickbait.html', my_list=clicks_out.Frames_similarity_index)
+  my_list=clicks_out.Frames_similarity_index
+
+  labels = list(my_list.keys())
+  values = list(my_list.values())
+
+  data = go.Bar(x=labels, y=values)
+
+  
+  layout = go.Layout(title='Similarity of Frames to the Thumbnail of the Video')
+
+  fig = go.Figure(data=[data], layout=layout)
+
+  graphJSON = pio.to_json(fig)
+  print(graphJSON)
+  return render_template('clickbait.html', graphJSON=graphJSON)
 
 
 # Need to reverify if it is a youtube link or not

@@ -11,9 +11,12 @@ import torchvision.transforms as transforms
 
 VID_LOC = "./assets/video"
 THUMB_LOC = "./assets/thumbnails/"
-
 thumbnail = os.path.join(THUMB_LOC,os.listdir(THUMB_LOC)[0])
-video  = cv2.VideoCapture(os.path.join(VID_LOC,os.listdir(VID_LOC)[0]))
+try:
+    video  = cv2.VideoCapture(os.path.join(VID_LOC,os.listdir(VID_LOC)[0]))
+except Exception as e:
+    print("Video Not Found in video")
+
 
 
 class Click():
