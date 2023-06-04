@@ -64,8 +64,10 @@ class Fetch():
     def download_video(self):
         # Try to create object
         try:
-            yt = YouTube(self.url)
-            yt = yt.streams.get_highest_resolution() # Ability to change this resolution, Might need to get API
+            yts = YouTube(self.url)
+            print(yts)
+            yt = yts.streams.filter(progressive=True, file_extension='mp4').order_by('resolution') # Ability to change this resolution, Might need to get API
+            yt = yt.desc().first()
             print("Got Hold of the stream")
         except:
             print("Connection Error") # Need to put a error handler here 
@@ -93,31 +95,6 @@ class Fetch():
                 print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
-    # def fetch_youtube(self, **kwargs):
-    #     # Testing if the url given is a youtube link
-    #     if is_youtube_url(self.url):
-    #         thumbnail_url = get_thumbnail(self.url) Done
-    #         print(thumbnail_url) Done
-    #         clean_assets(VID_LOC) Done
-    #         clean_assets(THUMB_LOC) Done
-    #         save_to_loc(thumbnail_url) Done
-    #         download_video(self.url)
-            
-    #     else:
-    #         print("Not a youtube url")
-
-
-    # def main():
-    #     parser.add_argument('-y', '--youtube', help="Add the full link of Youtube video", required=True)
-
-    #     if not len(sys.argv) > 1:
-    #         parser.print_help()
-    #         exit()
-
-    #     if parser.parse_args().youtube is not None:
-    #         fetch_youtube(parser.parse_args().youtube)
-
-
 
 if __name__ == '__main__':
-    Fetch.is_youtube_url("https://www.youtuCg3ps")
+    print("Please run app.py as a flask server using the command python app.py")
